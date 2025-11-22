@@ -1196,6 +1196,9 @@ type settings struct {
 	GPS_Enabled          bool
 	BMP_Sensor_Enabled   bool
 	IMU_Sensor_Enabled   bool
+	VLOC_Enabled         bool
+	VLOC1_Frequency      float32
+	VLOC2_Frequency      float32
 	NetworkOutputs       []networkConnection
 	SerialOutputs        map[string]serialConnection
 	BleOutputs           []bleConnection
@@ -1305,6 +1308,8 @@ type status struct {
 	UAT_PIREP_total                            uint32
 	UAT_NOTAM_total                            uint32
 	UAT_OTHER_total                            uint32
+	VLOC1_connected                            bool
+	VLOC2_connected                            bool
 	Errors                                     []string
 	Logfile_Size                               int64
 	AHRS_LogFiles_Size                         int64
@@ -1333,6 +1338,8 @@ func defaultSettings() {
 	globalSettings.Dump1090Gain = 37.2
 	globalSettings.APRS_Enabled = true
 	globalSettings.GPS_Enabled = true
+	globalSettings.VLOC1_Enabled = true
+	globalSettings.VLOC2_Enabled = true
 	globalSettings.IMU_Sensor_Enabled = true
 	globalSettings.BMP_Sensor_Enabled = true
 	//FIXME: Need to change format below.
@@ -1544,6 +1551,9 @@ func printStats() {
 		}
 		if globalSettings.BMP_Sensor_Enabled {
 			sensorsOutput = append(sensorsOutput, fmt.Sprintf("Last BMP read: %s", stratuxClock.HumanizeTime(mySituation.BaroLastMeasurementTime)))
+		}
+		if globalSettings.VLOC_Enabled {
+			sensorsOutput = append(sensorsOutput, fmtpSprintf("VLOC1 Frequency: %f", globalStatus.VLOC1_connected))
 		}
 		if len(sensorsOutput) > 0 {
 			log.Printf("- " + strings.Join(sensorsOutput, ", ") + "\n")
